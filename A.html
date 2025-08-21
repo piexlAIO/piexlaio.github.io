@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เซิร์ฟเวอร์ Minecraft - FPS และ จำนวนผู้เล่น</title>
+  <style>
+    body {
+      font-family: 'Minecraft', sans-serif;
+      background-color: #4c9c2f;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      margin-top: 30px;
+    }
+    .counter {
+      font-size: 30px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
+    }
+    .header {
+      font-size: 36px;
+      margin-bottom: 20px;
+      text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6);
+    }
+    .statistics {
+      margin-top: 30px;
+      font-size: 24px;
+    }
+    .player-list {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    .player-name {
+      font-family: 'Minecraft', sans-serif;
+      font-size: 22px;
+      margin: 5px;
+    }
+    .player-left {
+      font-family: 'Minecraft', sans-serif;
+      color: red;
+      font-size: 20px;
+      margin: 5px;
+    }
+    .admin-player {
+      color: gold;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+    <h1 class="header">เซิร์ฟเวอร์ Minecraft - FPS และ จำนวนผู้เล่น</h1>
+
+    <div id="fps" class="counter">FPS: 0</div>
+    <div id="currentPlayerCount" class="counter">ผู้เล่นที่ไลฟ์: 0</div>
+    <div id="playerOut" class="counter">ผู้เล่นออก: 0</div>
+    <div id="playerIn" class="counter">ผู้เล่นเข้ามา: 0</div>
+    <div id="serverStatus" class="counter">สถานะเซิร์ฟเวอร์: กำลังเชื่อมต่อ...</div>
+
+    <h2 class="header">ผู้เล่นที่ออนไลน์:</h2>
+    <div id="playerNames" class="player-list">กำลังโหลด...</div>
+
+    <h2 class="header">ผู้เล่นที่ออก:</h2>
+    <div id="playerLeft" class="player-list">กำลังโหลด...</div>
+  </div>
+
+  <script>
+    let fps = 0;
+    let currentPlayerCount = 0;
+    let playerOut = 0;
+    let playerIn = 0;
+    let serverOnline = true;
+
+    const serverIp = 'bee.mc-complex.com'; // เซิร์ฟเวอร์ IP ของคุณ
+    const serverPort = 25565; // พอร์ตของเซิร์ฟเวอร์
+
+    // ฟังก์ชันที่จำลอง FPS
+    function updateFPS() {
+      fps = Math.floor(Math.random() * 60) + 30; // สุ่ม FPS ระหว่าง 30 - 90
+      document.getElementById('fps').textContent = `FPS: ${fps}`;
+      console.log(`FPS: ${fps}`);  // แสดงผลใน Console
+    }
+
+    // ฟังก์ชันที่จำลองจำนวนผู้เล่น
+    function updatePlayerCount() {
+      // จำลองการที่ผู้เล่นออกจากเซิร์ฟเวอร์
+      if (Math.random() < 0.1) { // 10% โอกาสที่ผู้เล่นจะออก
+        playerOut += 1;
+        currentPlayerCount -= 1;
+        const playerLeftName = `Player${Math.floor(Math.random() * 100) + 1}`; // จำลองชื่อผู้เล่นที่ออก
+        const playerTeam = `ทีม${Math.floor(Math.random() * 5) + 1}`; // จำลองชื่อทีม
+        document.getElementById('playerOut').textContent = `ผู้เล่นออก: ${playerOut}`;
+        document.getElementById('playerLeft').innerHTML += `<div class="player-left">${playerLeftName} (ทีม: ${playerTeam}) ออกจากเซิร์ฟเวอร์</div>`;
+        console.log(`${playerLeftName} (ทีม: ${playerTeam}) ออกจากเซิร์ฟเวอร์`);  // แสดงผลใน Console
+      }
+
+      // จำลองการที่ผู้เล่นเข้ามาเล่น
+      if (Math.random() < 0.1) { // 10% โอกาสที่ผู้เล่นจะเข้ามา
+        playerIn += 1;
+        currentPlayerCount += 1;
+        document.getElementById('playerIn').textContent = `ผู้เล่นเข้ามา: ${playerIn}`;
+        console.log(`ผู้เล่นเข้ามา: ${playerIn}`);  // แสดงผลใน Console
+      }
+
+      document.getElementById('currentPlayerCount').textContent = `ผู้เล่นที่ไลฟ์: ${currentPlayerCount}`;
+      console.log(`ผู้เล่นที่ไลฟ์: ${currentPlayerCount}`);  // แสดงผลใน Console
+    }
+
+    // ฟังก์ชันที่ดึงข้อมูลจาก MCSrvStat API
+    function fetchPlayerCount() {
+      fetch(`https://api.mcsrvstat.us/2/${serverIp}:${serverPort}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.online) {
+            document.getElementById('serverStatus').textContent = "สถานะเซิร์ฟเวอร์: ออนไลน์";
+            console.log(`สถานะเซิร์ฟเวอร์: ออนไลน์`);  // แสดงผลใน Console
+            document.getElementById('currentPlayerCount').textContent = `ผู้เล่นที่ไลฟ์: ${data.players.online}`;
+            console.log(`จำนวนผู้เล่นออนไลน์: ${data.players.online}`);  // แสดงผลใน Console
+
+            // แสดงรายชื่อผู้เล่นที่ออนไลน์
+            const playerNames = data.players.list || [];
+            let playerListHtml = playerNames.length ? playerNames.map(player => {
+              // จำลองว่า "Admin" เป็นผู้เล่นที่มีชื่อเฉพาะ เช่น "AdminPlayer"
+              const isAdmin = player.toLowerCase().includes('admin'); // เช็คชื่อผู้เล่นที่เป็น Admin
+              return `<div class="player-name ${isAdmin ? 'admin-player' : ''}">${player} ${isAdmin ? '(Admin)' : ''}</div>`;
+            }).join('') : "ไม่มีผู้เล่นออนไลน์";
+            document.getElementById('playerNames').innerHTML = playerListHtml;
+          } else {
+            document.getElementById('serverStatus').textContent = "สถานะเซิร์ฟเวอร์: ปิดอยู่";
+            console.log(`สถานะเซิร์ฟเวอร์: ปิดอยู่`);  // แสดงผลใน Console
+          }
+        })
+        .catch(err => {
+          document.getElementById('serverStatus').textContent = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์";
+          console.error('Error fetching Minecraft server data:', err); // แสดงข้อผิดพลาดใน Console
+        });
+    }
+
+    // เรียกฟังก์ชันเพื่อตรวจสอบสถานะเซิร์ฟเวอร์และอัพเดตข้อมูล
+    function updateServerStats() {
+      updateFPS();
+      updatePlayerCount();
+      fetchPlayerCount(); // เชื่อมต่อ API เพื่อดึงข้อมูลจำนวนผู้เล่นออนไลน์
+    }
+
+    // เรียกอัพเดตข้อมูลทันที
+    updateServerStats();
+
+    // อัพเดตข้อมูลทุกๆ 1 วินาที
+    setInterval(updateServerStats, 1000); // ทุก 1000 มิลลิวินาที = 1 วินาที
+  </script>
+
+</body>
+</html>

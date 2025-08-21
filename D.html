@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GUI Log Server Minecraft</title>
+  <style>
+    body {
+      font-family: 'Minecraft', sans-serif;
+      background-color: #1c1c1c;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      margin-top: 20px;
+    }
+    .console {
+      background-color: #333;
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 80%;
+      height: 300px;
+      margin: 20px auto;
+      overflow-y: scroll;
+      font-family: monospace;
+      color: #fff;
+      font-size: 14px;
+    }
+    .input-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .input-box {
+      width: 50%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #2a2a2a;
+      border: 1px solid #ccc;
+      color: white;
+    }
+    .btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>GUI Log Server Minecraft</h1>
+
+    <div class="console" id="consoleOutput">
+      <p>กำลังเชื่อมต่อกับเซิร์ฟเวอร์...</p>
+    </div>
+
+    <div class="input-container">
+      <input type="text" id="commandInput" class="input-box" placeholder="พิมพ์คำสั่ง...">
+      <button class="btn" id="sendCommandBtn">ส่งคำสั่ง</button>
+    </div>
+  </div>
+
+  <script>
+    const serverIp = 'piexlAIO-8pmJ.aternos.me'; // เซิร์ฟเวอร์ IP ของคุณ
+    const serverPort = 21758; // พอร์ตของเซิร์ฟเวอร์
+
+    // ตัวอย่างการจำลอง log ของเซิร์ฟเวอร์
+    function displayConsoleOutput(message) {
+      const consoleOutput = document.getElementById('consoleOutput');
+      const newMessage = document.createElement('p');
+      newMessage.textContent = message;
+      consoleOutput.appendChild(newMessage);
+      consoleOutput.scrollTop = consoleOutput.scrollHeight; // ให้แสดงข้อความใหม่ล่าสุด
+    }
+
+    // ฟังก์ชันจำลองการดึงข้อมูล log จากเซิร์ฟเวอร์
+    function fetchServerLog() {
+      // จำลองการดึงข้อมูล log
+      setTimeout(() => {
+        displayConsoleOutput("[INFO] เซิร์ฟเวอร์เริ่มทำงาน...");
+      }, 500);
+
+      setTimeout(() => {
+        displayConsoleOutput("[INFO] ผู้เล่น Player1 เชื่อมต่อ...");
+      }, 1000);
+
+      setTimeout(() => {
+        displayConsoleOutput("[INFO] ผู้เล่น Player2 เชื่อมต่อ...");
+      }, 1500);
+
+      setTimeout(() => {
+        displayConsoleOutput("[INFO] ผู้เล่น Player1 ออกจากเซิร์ฟเวอร์...");
+      }, 2000);
+    }
+
+    // ส่งคำสั่งจากผู้ใช้
+    function sendCommand(command) {
+      displayConsoleOutput(`คำสั่ง: ${command}`);
+
+      if (command.toLowerCase() === 'status') {
+        setTimeout(() => {
+          displayConsoleOutput("[INFO] เซิร์ฟเวอร์ออนไลน์");
+          displayConsoleOutput("[INFO] จำนวนผู้เล่น: 2");
+        }, 500);
+      } else if (command.toLowerCase() === 'list') {
+        setTimeout(() => {
+          displayConsoleOutput("[INFO] ผู้เล่นออนไลน์: Player1, Player2");
+        }, 500);
+      } else {
+        setTimeout(() => {
+          displayConsoleOutput(`[ERROR] คำสั่งไม่รู้จัก: ${command}`);
+        }, 500);
+      }
+    }
+
+    // ควบคุมการส่งคำสั่งเมื่อกดปุ่ม
+    document.getElementById('sendCommandBtn').addEventListener('click', () => {
+      const commandInput = document.getElementById('commandInput');
+      const command = commandInput.value.trim();
+      if (command) {
+        sendCommand(command);
+        commandInput.value = ''; // เคลียร์ช่องกรอกคำสั่ง
+      }
+    });
+
+    // สามารถส่งคำสั่งจากการกด Enter ได้
+    document.getElementById('commandInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const commandInput = document.getElementById('commandInput');
+        const command = commandInput.value.trim();
+        if (command) {
+          sendCommand(command);
+          commandInput.value = ''; // เคลียร์ช่องกรอกคำสั่ง
+        }
+      }
+    });
+
+    // จำลองการดึง log ทุก ๆ 1 วินาที
+    setInterval(fetchServerLog, 1000); // ทุก 1000 มิลลิวินาที = 1 วินาที
+  </script>
+
+</body>
+</html>
